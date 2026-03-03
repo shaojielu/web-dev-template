@@ -7,7 +7,7 @@ updates:
       interval: daily
     commit-message:
       prefix: ⬆
-    labels: [dependencies, internal]
+    labels: [dependencies, upgrade]
   # Python uv
   - package-ecosystem: uv
     directory: /
@@ -15,7 +15,7 @@ updates:
       interval: weekly
     commit-message:
       prefix: ⬆
-    labels: [dependencies, internal]
+    labels: [dependencies, upgrade]
   # Frontend (pnpm)
   - package-ecosystem: npm
     directory: /frontend
@@ -23,7 +23,7 @@ updates:
       interval: weekly
     commit-message:
       prefix: ⬆
-    labels: [dependencies, internal]
+    labels: [dependencies, upgrade]
   # Docker
   - package-ecosystem: docker
     directories:
@@ -33,7 +33,7 @@ updates:
       interval: weekly
     commit-message:
       prefix: ⬆
-    labels: [dependencies, internal]
+    labels: [dependencies, upgrade]
   # Docker Compose
   - package-ecosystem: docker-compose
     directory: /
@@ -41,4 +41,4 @@ updates:
       interval: weekly
     commit-message:
       prefix: ⬆
-    labels: [dependencies, internal]
+    labels: [dependencies, upgrade]

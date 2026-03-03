@@ -11,9 +11,28 @@ on:
       - synchronize
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changed:
+              - backend/**
+              - frontend/**
+              - .env.example
+              - compose*.yml
+              - .github/workflows/test-docker-compose.yml
 
   test-docker-compose:
+    needs: changes
+    if: ${{ needs.changes.outputs.changed == 'true' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -37,3 +56,16 @@ jobs:
       - name: Cleanup environment file
         if: always()
         run: rm -f .env
+
+  # https://github.com/marketplace/actions/alls-green#why
+  alls-green-docker-compose:  # This job does nothing and is only used for the branch protection
+    if: always()
+    needs:
+      - test-docker-compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
+          allowed-skips: test-docker-compose

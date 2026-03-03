@@ -57,28 +57,11 @@ jobs:
         sed -i 's/^POSTGRES_PORT=.*/POSTGRES_PORT=5432/' .env
         sed -i 's/^SEED_SAMPLE_DATA=.*/SEED_SAMPLE_DATA=true/' .env
         sed -i 's/^ENABLE_PUBLIC_SIGNUP=.*/ENABLE_PUBLIC_SIGNUP=false/' .env
-    - uses: pnpm/action-setup@v4
-      with:
-        version: 9
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: 'pnpm'
-        cache-dependency-path: frontend/pnpm-lock.yaml
-    - uses: actions/setup-python@v6
-      with:
-        python-version: '3.13'
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled == 'true' }}
       with:
         limit-access-to-actor: true
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
-    - run: uv sync
-      working-directory: backend
-    - run: pnpm install --frozen-lockfile
-      working-directory: frontend
     - run: docker compose build
     - run: docker compose down -v --remove-orphans
     - name: Run Playwright tests

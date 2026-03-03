@@ -2,6 +2,8 @@ name: Add to Project
 
 on:
   pull_request_target:
+    types:
+      - opened
   issues:
     types:
       - opened

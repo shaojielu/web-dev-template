@@ -13,6 +13,7 @@ jobs:
       contents: read
       pull-requests: write
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Check if PRs have merge conflicts
         uses: eps1lon/actions-label-merge-conflict@v3

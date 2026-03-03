@@ -11,8 +11,27 @@ on:
       - synchronize
 
 jobs:
-  test-backend:
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changed:
+              - backend/**
+              - .env.example
+              - compose*.yml
+              - .github/workflows/test-backend.yml
+
+  test-backend:
+    needs: changes
+    if: ${{ needs.changes.outputs.changed == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -51,6 +70,7 @@ jobs:
       - run: docker compose down -v --remove-orphans
         if: always()
       - name: Store coverage files
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v6
         with:
           name: coverage-html
@@ -62,3 +82,16 @@ jobs:
       - name: Cleanup test environment file
         if: always()
         run: rm -f .env
+
+  # https://github.com/marketplace/actions/alls-green#why
+  alls-green-backend:  # This job does nothing and is only used for the branch protection
+    if: always()
+    needs:
+      - test-backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
+          allowed-skips: test-backend
