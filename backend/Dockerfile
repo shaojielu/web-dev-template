@@ -1,6 +1,6 @@
 FROM ghcr.io/astral-sh/uv:0.6.6 AS uv
 
-FROM python:3.13 AS builder
+FROM python:3.14 AS builder
 
 COPY --from=uv /uv /uvx /bin/
 
@@ -16,7 +16,7 @@ COPY backend/pyproject.toml backend/uv.lock ./
 
 RUN uv sync --frozen --no-install-project
 
-FROM python:3.13-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
