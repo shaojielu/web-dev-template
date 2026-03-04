@@ -1,0 +1,44 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: ⬆
+    labels: [dependencies, upgrade]
+  # Python uv
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ⬆
+    labels: [dependencies, upgrade]
+  # Frontend (pnpm)
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ⬆
+    labels: [dependencies, upgrade]
+  # Docker
+  - package-ecosystem: docker
+    directories:
+      - /backend
+      - /frontend
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ⬆
+    labels: [dependencies, upgrade]
+  # Docker Compose
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ⬆
+    labels: [dependencies, upgrade]

@@ -1,0 +1,20 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      environment: staging
+      runner-label: staging
+      tag: ${{ github.sha }}
+      cache-suffix: staging
+    secrets: inherit

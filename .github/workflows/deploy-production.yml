@@ -1,0 +1,20 @@
+name: Deploy to Production
+
+on:
+  release:
+    types:
+      - published
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      environment: production
+      runner-label: production
+      tag: ${{ github.event.release.tag_name }}
+      cache-suffix: production
+    secrets: inherit
