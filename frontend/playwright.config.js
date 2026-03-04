@@ -8,6 +8,7 @@ const config = {
   use: {
     baseURL,
     trace: 'retain-on-failure',
+    video: 'retain-on-failure',
   },
 };
 
