@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic.networks import EmailStr
 from sqlalchemy import text
 
@@ -23,9 +23,15 @@ async def health_check(session: SessionDep) -> bool:
 def test_email(email_to: EmailStr) -> Message:
     """Send test email."""
     email_data = generate_test_email(email_to=email_to)
-    send_email(
-        email_to=email_to,
-        subject=email_data.subject,
-        html_content=email_data.html_content,
-    )
+    try:
+        send_email(
+            email_to=email_to,
+            subject=email_data.subject,
+            html_content=email_data.html_content,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(exc),
+        ) from exc
     return Message(message="Test email sent")

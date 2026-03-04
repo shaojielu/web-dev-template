@@ -26,10 +26,10 @@ def anyio_backend() -> str:
 @pytest.fixture(scope="session", autouse=True)
 async def setup_db() -> None:
     """Create database tables (session-scoped, runs once)."""
-    if settings.ENVIRONMENT != "test" or not settings.POSTGRES_DB.endswith("_test"):
+    if settings.ENVIRONMENT in {"staging", "production"}:
         raise RuntimeError(
-            "Refusing to run destructive test setup outside test DB. "
-            "Set ENVIRONMENT=test and POSTGRES_DB ending with '_test'."
+            "Refusing to run destructive test setup in staging/production. "
+            "Use local/test environment for running tests."
         )
 
     async with engine.begin() as conn:

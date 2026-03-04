@@ -8,7 +8,7 @@ test('customer search returns expected result', async ({ page }) => {
 
   const searchInput = page.getByTestId('customer-search-input');
   await searchInput.fill('Alice');
-  await expect(page.getByText('Alice Johnson')).toBeVisible();
+  await expect(page.locator('tr', { hasText: 'Alice Johnson' }).first()).toBeVisible();
 });
 
 test('customer search empty result is handled', async ({ page }) => {

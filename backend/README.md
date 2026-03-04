@@ -47,7 +47,8 @@ From `backend/`:
 ENVIRONMENT=test POSTGRES_DB=app_test POSTGRES_SERVER=localhost POSTGRES_PORT=5432 POSTGRES_USER=postgres POSTGRES_PASSWORD=changethis uv run pytest
 ```
 
-Safety guard: tests will abort unless `ENVIRONMENT=test` and `POSTGRES_DB` ends with `_test`.
+Recommended for isolation: use `ENVIRONMENT=test` with a dedicated database (for example `app_test`).
+Safety guard: tests are blocked in `staging` and `production`.
 
 Coverage:
 

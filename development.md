@@ -111,16 +111,18 @@ fastapi run --reload app/main.py
 
 ## Running Backend Tests (Pytest)
 
-Backend tests include destructive database operation protection and require:
+Backend tests perform destructive setup (`drop_all/create_all`), so it is recommended to use:
 
 * `ENVIRONMENT=test`
-* `POSTGRES_DB` ending with `_test` (e.g., `app_test`)
+* a dedicated test database such as `POSTGRES_DB=app_test`
 
 Recommended command (in the `backend/` directory):
 
 ```bash
 ENVIRONMENT=test POSTGRES_DB=app_test POSTGRES_SERVER=localhost POSTGRES_PORT=5432 POSTGRES_USER=postgres POSTGRES_PASSWORD=changethis uv run pytest
 ```
+
+Tests are blocked in `staging` and `production` environments.
 
 If you first start the database from the project root directory:
 

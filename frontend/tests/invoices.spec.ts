@@ -2,11 +2,25 @@ import { expect, test } from '@playwright/test';
 
 import { login } from './helpers';
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function formatUSD(amount: string): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(Number(amount));
+}
+
 test('invoice create, update and delete flow works', async ({ page }) => {
   await login(page);
 
-  const createdAmount = '1234.56';
-  const updatedAmount = '2234.56';
+  const uniqueCents = String(Date.now() % 100).padStart(2, '0');
+  const createdAmount = `1234.${uniqueCents}`;
+  const updatedAmount = `2234.${uniqueCents}`;
+  const createdAmountText = formatUSD(createdAmount);
+  const updatedAmountText = formatUSD(updatedAmount);
 
   await page.goto('/dashboard/invoices/create');
   const customerSelect = page.locator('select[name="customerId"]');
@@ -19,7 +33,12 @@ test('invoice create, update and delete flow works', async ({ page }) => {
 
   const searchInput = page.getByTestId('invoice-search-input');
   await searchInput.fill(createdAmount);
-  const createdRow = page.locator('tr', { hasText: '$1,234.56' }).first();
+  await expect(page).toHaveURL(
+    new RegExp(
+      `/dashboard/invoices\\?page=1&query=${escapeRegExp(createdAmount)}$`,
+    ),
+  );
+  const createdRow = page.locator('tr', { hasText: createdAmountText }).first();
   await expect(createdRow).toBeVisible();
 
   await createdRow.getByTestId('invoice-edit-button').click();
@@ -29,11 +48,16 @@ test('invoice create, update and delete flow works', async ({ page }) => {
   await expect(page).toHaveURL(/\/dashboard\/invoices$/);
 
   await searchInput.fill(updatedAmount);
-  const updatedRow = page.locator('tr', { hasText: '$2,234.56' }).first();
+  await expect(page).toHaveURL(
+    new RegExp(
+      `/dashboard/invoices\\?page=1&query=${escapeRegExp(updatedAmount)}$`,
+    ),
+  );
+  const updatedRow = page.locator('tr', { hasText: updatedAmountText }).first();
   await expect(updatedRow).toBeVisible();
 
   await updatedRow.getByTestId('invoice-delete-button').click();
-  await expect(page.locator('tr', { hasText: '$2,234.56' })).toHaveCount(0);
+  await expect(page.locator('tr', { hasText: updatedAmountText })).toHaveCount(0);
 });
 
 test('invoice edit page shows not found for missing invoice', async ({ page }) => {

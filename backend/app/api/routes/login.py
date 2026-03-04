@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from typing import Annotated
 
@@ -19,6 +20,18 @@ from app.utils.utils import (
 )
 
 router = APIRouter(prefix="/login", tags=["login"])
+logger = logging.getLogger(__name__)
+
+
+def _send_password_recovery_email(
+    *, email_to: str, subject: str, html_content: str
+) -> None:
+    """Best-effort email sender for background tasks."""
+    try:
+        send_email(email_to=email_to, subject=subject, html_content=html_content)
+    except Exception:
+        # Keep password-recovery response stable even if email delivery fails.
+        logger.exception("Failed to send password recovery email to %s", email_to)
 
 
 @router.post("/access-token", response_model=Token)
@@ -68,7 +81,7 @@ async def recover_password(
             email_to=user.email, email=email, token=password_reset_token
         )
         background_tasks.add_task(
-            send_email,
+            _send_password_recovery_email,
             email_to=user.email,
             subject=email_data.subject,
             html_content=email_data.html_content,

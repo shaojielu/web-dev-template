@@ -86,7 +86,7 @@ export async function fetchInvoiceById(id: string): Promise<InvoiceForm | null> 
 
 export async function fetchCustomers(): Promise<CustomerField[]> {
   const data = await apiFetch<{ data: CustomerField[]; count: number }>(
-    '/api/v1/customers/?skip=0&limit=1000',
+    '/api/v1/customers/?skip=0&limit=500',
   );
   return data.data.map((customer) => ({
     id: customer.id,

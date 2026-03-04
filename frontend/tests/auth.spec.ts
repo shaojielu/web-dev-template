@@ -25,11 +25,15 @@ test('expired session redirects back to login', async ({ page, context, baseURL 
   if (!baseURL) {
     throw new Error('baseURL is required for cookie-based test.');
   }
+  const parsedBaseURL = new URL(baseURL);
+
   await context.addCookies([
     {
       name: 'access_token',
       value: 'invalid.token.value',
-      url: baseURL,
+      domain: parsedBaseURL.hostname,
+      path: '/',
+      secure: parsedBaseURL.protocol === 'https:',
     },
   ]);
   await page.goto('/dashboard');
