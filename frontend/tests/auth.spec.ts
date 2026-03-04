@@ -30,7 +30,6 @@ test('expired session redirects back to login', async ({ page, context, baseURL 
       name: 'access_token',
       value: 'invalid.token.value',
       url: baseURL,
-      path: '/',
     },
   ]);
   await page.goto('/dashboard');
