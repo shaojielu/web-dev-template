@@ -1,3 +1,6 @@
+import os
+from unittest.mock import patch
+
 import pytest
 
 from app.core.config import Settings, parse_cors
@@ -23,31 +26,42 @@ def test_parse_cors_invalid_type_raises() -> None:
 
 def test_check_default_secret_raises_in_non_local() -> None:
     """Using default secret in staging/production should raise ValueError."""
-    with pytest.raises(ValueError, match="changethis"):
-        Settings(
-            ENVIRONMENT="staging",
-            SECRET_KEY="changethis",
-            POSTGRES_SERVER="localhost",
-            POSTGRES_USER="postgres",
-            POSTGRES_PASSWORD="safe_password",
-            POSTGRES_DB="app_test",
-            PROJECT_NAME="test",
-            FIRST_SUPERUSER="admin@example.com",
-            FIRST_SUPERUSER_PASSWORD="safe_password",
-        )
+    env_override = {
+        k: v for k, v in os.environ.items() if k not in {"ENVIRONMENT", "SECRET_KEY"}
+    }
+    with patch.dict(os.environ, env_override, clear=True):
+        with pytest.raises(ValueError, match="changethis"):
+            Settings(
+                ENVIRONMENT="staging",
+                SECRET_KEY="changethis",
+                POSTGRES_SERVER="localhost",
+                POSTGRES_USER="postgres",
+                POSTGRES_PASSWORD="safe_password",
+                POSTGRES_DB="app_test",
+                PROJECT_NAME="test",
+                FIRST_SUPERUSER="admin@example.com",
+                FIRST_SUPERUSER_PASSWORD="safe_password",
+            )
 
 
 def test_seed_sample_data_defaults_to_true_for_local() -> None:
     """SEED_SAMPLE_DATA should default to True when ENVIRONMENT is 'local'."""
-    s = Settings(
-        ENVIRONMENT="local",
-        SECRET_KEY="testsecret",
-        POSTGRES_SERVER="localhost",
-        POSTGRES_USER="postgres",
-        POSTGRES_PASSWORD="password",
-        POSTGRES_DB="app_test",
-        PROJECT_NAME="test",
-        FIRST_SUPERUSER="admin@example.com",
-        FIRST_SUPERUSER_PASSWORD="password",
-    )
+    # Clear env vars that pydantic-settings would prioritize over init kwargs
+    env_override = {
+        k: v
+        for k, v in os.environ.items()
+        if k not in {"ENVIRONMENT", "SEED_SAMPLE_DATA"}
+    }
+    with patch.dict(os.environ, env_override, clear=True):
+        s = Settings(
+            ENVIRONMENT="local",
+            SECRET_KEY="testsecret",
+            POSTGRES_SERVER="localhost",
+            POSTGRES_USER="postgres",
+            POSTGRES_PASSWORD="password",
+            POSTGRES_DB="app_test",
+            PROJECT_NAME="test",
+            FIRST_SUPERUSER="admin@example.com",
+            FIRST_SUPERUSER_PASSWORD="password",
+        )
     assert s.SEED_SAMPLE_DATA is True
