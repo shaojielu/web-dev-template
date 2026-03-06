@@ -23,7 +23,7 @@ jobs:
     permissions:
       pull-requests: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # To allow latest-changes to commit to the main branch
           token: ${{ secrets.LATEST_CHANGES }}
