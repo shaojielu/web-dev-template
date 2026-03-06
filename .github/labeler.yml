@@ -23,3 +23,13 @@ internal:
               - "!./**/*.md"
               - "!frontend/**"
               - "!backend/**"
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - frontend/**
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/**

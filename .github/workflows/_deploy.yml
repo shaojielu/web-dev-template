@@ -60,7 +60,7 @@ jobs:
           echo "BACKEND_CORS_ORIGINS=https://dashboard.${DOMAIN},https://api.${DOMAIN}" >> "$GITHUB_ENV"
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
