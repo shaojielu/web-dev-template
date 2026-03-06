@@ -16,7 +16,7 @@ jobs:
     outputs:
       changed: ${{ steps.filter.outputs.changed }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       - name: Prepare environment file
         run: |
           cp .env.example .env
@@ -58,7 +58,7 @@ jobs:
         run: rm -f .env
 
   # https://github.com/marketplace/actions/alls-green#why
-  alls-green-docker-compose:  # This job does nothing and is only used for the branch protection
+  alls-green-docker-compose: # This job does nothing and is only used for the branch protection
     if: always()
     needs:
       - test-docker-compose

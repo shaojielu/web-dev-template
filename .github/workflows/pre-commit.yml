@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         name: Checkout PR for own repo
         if: env.HAS_SECRETS == 'true'
         with:
@@ -27,11 +27,11 @@ jobs:
           # A token other than the default GITHUB_TOKEN is needed to be able to trigger CI
           token: ${{ secrets.PRE_COMMIT }}
       # pre-commit lite ci needs the default checkout configs to work
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         name: Checkout PR for fork
         if: env.HAS_SECRETS == 'false'
         with:
-        # To be able to commit it needs the head branch of the PR, the remote one
+          # To be able to commit it needs the head branch of the PR, the remote one
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: Set up Node.js
@@ -58,7 +58,6 @@ jobs:
         working-directory: backend
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: frontend
       - name: Run prek - pre-commit
         id: precommit
         run: uvx prek run --from-ref origin/${GITHUB_BASE_REF} --to-ref HEAD --show-diff-on-failure
@@ -84,7 +83,7 @@ jobs:
         run: exit 1
 
   # https://github.com/marketplace/actions/alls-green#why
-  pre-commit-alls-green:  # This job does nothing and is only used for the branch protection
+  pre-commit-alls-green: # This job does nothing and is only used for the branch protection
     if: always()
     needs:
       - pre-commit
